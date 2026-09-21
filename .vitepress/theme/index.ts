@@ -1,4 +1,7 @@
-import DefaultTheme from 'vitepress/theme'
+import type { Theme } from 'vitepress'
+import CosmosLayout from './CosmosLayout.vue'
 import './style.css'
 
-export default DefaultTheme
+export default {
+  Layout: CosmosLayout,
+} satisfies Theme

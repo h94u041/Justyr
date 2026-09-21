@@ -1,23 +1,30 @@
 import { defineConfig } from 'vitepress'
 
+const favicon =
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><radialGradient id="g" cx="35%" cy="30%"><stop offset="0" stop-color="#ffb37a"/><stop offset="1" stop-color="#5a1f8a"/></radialGradient></defs><ellipse cx="32" cy="34" rx="30" ry="9" fill="none" stroke="#8ee8ff" stroke-width="3" transform="rotate(-20 32 34)"/><circle cx="32" cy="32" r="18" fill="url(#g)"/></svg>`
+  )
+
 export default defineConfig({
-  title: 'Jusrtyr',
-  description: '全端工程師 · ERP TIPTOP · Vue3 · Laravel · 8 年經驗',
+  title: 'Justyr',
+  titleTemplate: false,
+  description: '蔡勝諺 Justyr · 全端工程師 · Vue 3 / React · Laravel · T-SQL',
   lang: 'zh-TW',
-  appearance: 'dark',
+  base: '/Justyr/',
+  cleanUrls: true,
+  appearance: false,
   head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }],
-    ['meta', { name: 'theme-color', content: '#7c5cfc' }],
-  ],
-  themeConfig: {
-    nav: [
-      { text: '首頁', link: '/' },
-      { text: '技能', link: '#skills' },
-      { text: '經歷', link: '#experience' },
-      { text: '聯絡', link: '#contact' },
+    ['link', { rel: 'icon', href: favicon }],
+    ['meta', { name: 'theme-color', content: '#05060f' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+    [
+      'link',
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap',
+      },
     ],
-    footer: {
-      message: '© 2024 Jusrtyr. All rights reserved.',
-    },
-  },
+  ],
 })
