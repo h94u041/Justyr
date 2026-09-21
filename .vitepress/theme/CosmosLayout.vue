@@ -21,36 +21,25 @@ const orbits = [
 
 const journey = [
   {
-    period: '2026 — 至今',
+    period: '-',
     role: '全端工程師',
-    company: '數據科技股份有限公司',
     tags: ['React', 'Laravel', 'MySQL', 'Serverless'],
-    text: '一人扛官網、數據後台、製造管理與客戶銷售四套系統；串接 Chat Bot、金流、第三方驗證與快遞平台。',
+    text: '官網、數據後台、製造管理與客戶銷售四套系統；串接 Chat Bot、金流、第三方驗證與快遞平台。',
     hue: 'cyan',
   },
   {
     period: '2022 — 2025',
-    role: '軟體工程師',
-    company: '大立光電',
+    role: '全端工程師',
     tags: ['Vue 3', '後端 API', '系統架構'],
-    text: '在精密光學製造現場，從底層架構到 Vue 3 前端，一人從零建起整套系統，運行近四年。',
+    text: '從底層架構到 Vue 3 前端 + Laravel，一人從零建起整套系統，運行近四年。',
     hue: 'gold',
   },
   {
     period: '2020 — 2022',
-    role: '軟體開發員 / DBA',
-    company: '愛地雅',
+    role: '軟體工程師 / DBA',
     tags: ['Oracle', '4GL ERP', 'Java', 'JavaScript'],
-    text: 'Oracle 資料庫維運、ERP 模組與表單簽核系統開發，兼顧效能調教與技術債清理。',
+    text: 'Oracle 資料庫維運、ERP 模組與表單簽核系統開發。',
     hue: 'violet',
-  },
-  {
-    period: '2019 — 2020',
-    role: '後端 PLM 工程師',
-    company: '順誠國際',
-    tags: ['C#', 'T-SQL', 'PLM'],
-    text: '負責 MS-SQL 與 PLM 系統的溝通邏輯，參與淨銷存與多角貿易流程開發。',
-    hue: 'rose',
   },
 ]
 
@@ -361,7 +350,7 @@ onUnmounted(() => {
           <div class="timeline__track"><span class="timeline__ship" /></div>
           <article
             v-for="(j, i) in journey"
-            :key="j.company"
+            :key="j.period + j.role"
             class="stop"
             :class="[i % 2 ? 'stop--right' : 'stop--left']"
             :data-reveal="i % 2 ? 'right' : 'left'"
@@ -370,7 +359,6 @@ onUnmounted(() => {
             <div class="stop__card">
               <p class="stop__period">{{ j.period }}</p>
               <h3 class="stop__role">{{ j.role }}</h3>
-              <p class="stop__company">{{ j.company }}</p>
               <p class="stop__text">{{ j.text }}</p>
               <ul class="stop__tags"><li v-for="t in j.tags" :key="t">{{ t }}</li></ul>
             </div>
@@ -1220,10 +1208,6 @@ section {
   margin-top: 8px;
   font-size: 1.35rem;
   font-weight: 700;
-}
-.stop__company {
-  color: var(--ink-2);
-  font-size: 0.95rem;
 }
 .stop__text {
   margin-top: 12px;
