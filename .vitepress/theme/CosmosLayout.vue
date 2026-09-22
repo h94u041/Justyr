@@ -1277,6 +1277,11 @@ section {
 /* =====================================================
    deck (成果簡報)
    ===================================================== */
+.deck {
+  max-width: none;
+  padding-left: clamp(12px, 2vw, 32px);
+  padding-right: clamp(12px, 2vw, 32px);
+}
 .deck__head {
   text-align: center;
 }
@@ -1288,6 +1293,8 @@ section {
 .deck__stage {
   position: relative;
   display: grid;
+  width: 100%;
+  min-height: 70vh;
   border: 1px solid var(--line);
   border-radius: 28px;
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)), rgba(8, 10, 24, 0.7);
@@ -1298,10 +1305,11 @@ section {
 .slide {
   grid-area: 1 / 1;
   position: relative;
-  padding: clamp(28px, 4vw, 52px);
+  padding: clamp(32px, 5vw, 80px) clamp(28px, 6vw, 96px);
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
-  gap: clamp(28px, 4vw, 56px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: clamp(32px, 5vw, 96px);
+  align-items: center;
   opacity: 0;
   visibility: hidden;
   transform: translateX(60px);
@@ -1320,8 +1328,8 @@ section {
   position: absolute;
   right: -90px;
   top: -90px;
-  width: 260px;
-  height: 260px;
+  width: 34vh;
+  height: 34vh;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #fff 0%, var(--c1) 25%, var(--c2) 100%);
   box-shadow: inset -40px -40px 90px rgba(0, 0, 0, 0.6), 0 0 90px var(--glow);
@@ -1332,39 +1340,40 @@ section {
   position: relative;
 }
 .slide__index {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   letter-spacing: 0.3em;
   color: var(--ink-3);
 }
 .slide__period {
-  margin-top: 18px;
-  font-size: 0.8rem;
+  margin-top: 22px;
+  font-size: 1.05rem;
   letter-spacing: 0.25em;
   color: var(--c1);
 }
 .slide__role {
-  margin-top: 8px;
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  margin-top: 10px;
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
   font-weight: 700;
   line-height: 1.2;
 }
 .slide__summary {
-  margin-top: 14px;
+  margin-top: 18px;
   color: var(--ink-2);
+  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
   line-height: 1.8;
 }
 .slide__stack {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 22px;
+  gap: 10px;
+  margin-top: 28px;
 }
 .slide__stack li {
-  padding: 4px 10px;
-  border-radius: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
-  font-size: 0.74rem;
+  font-size: 0.95rem;
   letter-spacing: 0.06em;
   color: var(--ink-2);
 }
@@ -1375,11 +1384,11 @@ section {
   gap: clamp(20px, 3vw, 40px);
 }
 .slide__label {
-  font-size: 0.75rem;
+  font-size: 1rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ink-3);
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--line);
 }
 .slide__label--win {
@@ -1387,15 +1396,15 @@ section {
 }
 .slide__list {
   list-style: none;
-  margin-top: 14px;
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 .slide__list li {
   position: relative;
-  padding-left: 18px;
-  font-size: 0.92rem;
+  padding-left: 24px;
+  font-size: clamp(1.05rem, 1.35vw, 1.3rem);
   line-height: 1.7;
   color: var(--ink-2);
   opacity: 0;
@@ -1410,9 +1419,9 @@ section {
   content: '';
   position: absolute;
   left: 0;
-  top: 0.75em;
-  width: 6px;
-  height: 6px;
+  top: 0.7em;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--ink-3);
 }
@@ -1425,15 +1434,16 @@ section {
   font-weight: 500;
 }
 .slide__list--win li.is-star::before {
-  width: 8px;
-  height: 8px;
+  width: 11px;
+  height: 11px;
   left: -1px;
   background: radial-gradient(circle at 35% 35%, #fff, var(--c1) 60%);
 }
 .slide__metric {
   display: block;
-  margin: 2px 0 6px;
-  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  margin: 2px 0 8px;
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  white-space: nowrap;
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.02em;
@@ -1450,8 +1460,8 @@ section {
   margin-top: 26px;
 }
 .deck__btn {
-  width: 42px;
-  height: 42px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   border: 1px solid var(--line);
   background: var(--glass);
@@ -1486,9 +1496,9 @@ section {
   box-shadow: 0 0 12px var(--cyan);
 }
 .deck__hint {
-  margin-top: 12px;
+  margin-top: 14px;
   text-align: center;
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   letter-spacing: 0.15em;
   color: var(--ink-3);
 }
@@ -1738,6 +1748,22 @@ section {
   }
   .deck__stage {
     border-radius: 20px;
+  }
+  .slide {
+    padding: 28px 22px;
+    align-items: start;
+    align-content: start;
+    gap: 28px;
+  }
+  .slide__role {
+    font-size: 1.8rem;
+  }
+  .slide__list li {
+    font-size: 1rem;
+  }
+  .slide__planet {
+    width: 160px;
+    height: 160px;
   }
   .nav__links {
     gap: 18px;
