@@ -5,7 +5,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 const traits = ['選擇勝於打拼', '冷靜客觀', '學習力強', '狀況分析']
 
 const skills = [
-  { name: 'T-SQL / MS SQL', years: 7, max: 7, hue: 'gold', note: '大量 View 整合分析、效能調教' },
+  { name: 'T-SQL / MS SQL', years: 8, max: 8, hue: 'gold', note: '大量 View 整合分析、效能調教' },
   { name: 'Vue 3', years: 5, max: 7, hue: 'teal', note: '大前端從無到有，一人獨立建置' },
   { name: 'Laravel / PHP', years: 5, max: 7, hue: 'rose', note: 'API Service、金流、第三方驗證' },
   { name: 'React', years: 1, max: 7, hue: 'cyan', note: '官網、數據後台、銷售管理前端' },
@@ -42,6 +42,75 @@ const journey = [
     hue: 'violet',
   },
 ]
+
+/* 成果簡報：每一頁一個職務，只列負責事務與完成事項，不放公司名 */
+type Win = { text: string; star?: boolean; metric?: string }
+type Slide = { period: string; role: string; summary: string; hue: string; duties: string[]; wins: Win[]; stack: string[] }
+const deck: Slide[] = [
+  {
+    period: '2026 — 至今',
+    role: '全端工程師',
+    summary: '一人扛四套系統的前後端，從架構到上線。',
+    hue: 'cyan',
+    duties: [
+      '整體 Web 服務架構規劃與開發',
+      '後端資料庫設計、API 接口邏輯與資料流',
+      '官網、數據後台、製造管理後台、客戶銷售管理 前端開發與維護',
+      '各類規格探查與技術調研',
+    ],
+    wins: [
+      { text: '將老介面打造為商用級介面', star: true },
+      { text: 'Chat 訊息機器人、Serverless API 上線' },
+      { text: '第三方驗證與金流整合' },
+      { text: '快遞平台串接，出貨流程自動化' },
+    ],
+    stack: ['React', 'Laravel', 'MySQL', 'Serverless', 'Git'],
+  },
+  {
+    period: '2022 — 2025',
+    role: '全端工程師 · 獨立開發',
+    summary: '在精密製造現場，一個人從零建起整套系統。',
+    hue: 'gold',
+    duties: [
+      '底層架構、後端 API 到 Vue 3 前端，全端獨立設計與建置',
+      '系統穩定性與長期維護成本的取捨',
+      '需求訪談、規格定義到部署上線',
+    ],
+    wins: [
+      { text: '整套系統從無到有，穩定運行近四年', star: true },
+      { text: '在資源有限下兼顧開發效率與可維護性' },
+      { text: '零外部協力，單人完成全部環節' },
+    ],
+    stack: ['Vue 3', 'Laravel', 'T-SQL', 'Linux'],
+  },
+  {
+    period: '2020 — 2022',
+    role: '軟體工程師 / DBA · ERP',
+    summary: '維運 Oracle 資料庫，開發 ERP 與簽核系統。',
+    hue: 'violet',
+    duties: [
+      'Oracle 資料庫維護與資源管理（CPU、Memory、IO、權限、空間）',
+      'ERP 程式開發（Genero 4GL / 4fd）',
+      '表單簽核系統（JavaScript、Java SessionBean）',
+      '效能調教、技術債梳理，兼顧維運成本',
+    ],
+    wins: [
+      { text: '替公司省下一年 500 萬的維護成本', star: true, metric: '500萬 / 年' },
+      { text: '資料庫效能調教，消除瓶頸' },
+      { text: '簽核流程系統化，取代紙本作業' },
+    ],
+    stack: ['Oracle', '4GL', 'TIPTOP', 'Java', 'JavaScript', 'Linux'],
+  },
+]
+
+const slide = ref(0)
+const slideDir = ref(1)
+const goSlide = (n: number) => {
+  const len = deck.length
+  const next = ((n % len) + len) % len
+  slideDir.value = next > slide.value || (slide.value === len - 1 && next === 0) ? 1 : -1
+  slide.value = next
+}
 
 /* ---------- runtime ---------- */
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -193,8 +262,28 @@ onMounted(() => {
     raf = requestAnimationFrame(draw)
   }
 
+  /* deck: 方向鍵翻頁（簡報在視窗內時才吃鍵盤） */
+  const deckEl = document.getElementById('deck')
+  const onKey = (e: KeyboardEvent) => {
+    if (!deckEl) return
+    const r = deckEl.getBoundingClientRect()
+    if (r.bottom < 0 || r.top > window.innerHeight) return
+    if (e.key === 'ArrowRight') goSlide(slide.value + 1)
+    else if (e.key === 'ArrowLeft') goSlide(slide.value - 1)
+  }
+  window.addEventListener('keydown', onKey)
+  cleanupFns.push(() => window.removeEventListener('keydown', onKey))
+
   requestAnimationFrame(() => (loaded.value = true))
 })
+
+/* deck: 手機左右滑 */
+let touchX = 0
+const onTouchStart = (e: TouchEvent) => (touchX = e.touches[0].clientX)
+const onTouchEnd = (e: TouchEvent) => {
+  const dx = e.changedTouches[0].clientX - touchX
+  if (Math.abs(dx) > 48) goSlide(slide.value + (dx < 0 ? 1 : -1))
+}
 
 onUnmounted(() => {
   cancelAnimationFrame(raf)
@@ -223,6 +312,7 @@ onUnmounted(() => {
       <a href="#top" class="nav__logo"><span class="nav__dot" />Justyr</a>
       <nav class="nav__links">
         <a href="#skills">技能</a>
+        <a href="#deck">簡報</a>
         <a href="#journey">航程</a>
         <a href="#contact">聯絡</a>
       </nav>
@@ -240,10 +330,9 @@ onUnmounted(() => {
         <div class="hero__copy">
           <p class="eyebrow"><span class="eyebrow__line" />Full-Stack Engineer · Taichung</p>
           <h1 class="hero__name">
-            <span class="hero__zh">蔡勝諺</span>
             <span class="hero__en">Justyr</span>
           </h1>
-          <p class="hero__lead">7 年全端。<br />從 ERP 底層到 Web 前端，<em>一個人也能建起一整套系統。</em></p>
+          <p class="hero__lead">8 年全端。<br />從 ERP 底層到 Web 全端，<em>一個人也能建起一整套系統。</em></p>
           <ul class="traits">
             <li v-for="(t, i) in traits" :key="t" :style="{ '--i': i }">{{ t }}</li>
           </ul>
@@ -268,9 +357,9 @@ onUnmounted(() => {
             面對技術債，主動盤點與重構，而非等它累積成災。
           </p>
           <div class="stats" data-reveal="up" style="--d: 0.3s">
-            <div class="stat"><span class="stat__n">7<i>+</i></span><span class="stat__l">年開發資歷</span></div>
+            <div class="stat"><span class="stat__n">8<i>+</i></span><span class="stat__l">年開發資歷</span></div>
             <div class="stat"><span class="stat__n">4</span><span class="stat__l">套系統同時維護</span></div>
-            <div class="stat"><span class="stat__n">1</span><span class="stat__l">人從零建置全端</span></div>
+            <div class="stat"><span class="stat__n">1</span><span class="stat__l">人從零全站建置</span></div>
           </div>
         </div>
       </section>
@@ -280,7 +369,7 @@ onUnmounted(() => {
         <div class="skills__head">
           <p class="section-tag" data-reveal="up">02 · Skills</p>
           <h2 class="section-title" data-reveal="up" style="--d: 0.1s">技術星系</h2>
-          <p class="section-desc" data-reveal="up" style="--d: 0.2s">資料庫是核心引力，前後端在軌道上運行。</p>
+          <p class="section-desc" data-reveal="up" style="--d: 0.2s">Core in Database，前後端在軌道上運行</p>
         </div>
 
         <div class="skills__body">
@@ -338,10 +427,78 @@ onUnmounted(() => {
         </ul>
       </section>
 
+      <!-- ============ DECK ============ -->
+      <section id="deck" class="deck">
+        <div class="deck__head">
+          <p class="section-tag" data-reveal="up">03 · Highlights</p>
+          <h2 class="section-title" data-reveal="up" style="--d: 0.1s">成果簡報</h2>
+          <p class="section-desc" data-reveal="up" style="--d: 0.2s">每個職務，我負責什麼、完成了什麼。</p>
+        </div>
+
+        <div class="deck__frame" data-reveal="up" style="--d: 0.3s" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
+          <div class="deck__stage" :class="slideDir > 0 ? 'dir-next' : 'dir-prev'">
+            <article
+              v-for="(s, i) in deck"
+              :key="s.period"
+              class="slide"
+              :class="[{ 'is-active': i === slide }, 'hue-' + s.hue]"
+              :aria-hidden="i !== slide"
+            >
+              <div class="slide__planet" aria-hidden="true" />
+              <header class="slide__head">
+                <span class="slide__index">{{ String(i + 1).padStart(2, '0') }} / {{ String(deck.length).padStart(2, '0') }}</span>
+                <p class="slide__period">{{ s.period }}</p>
+                <h3 class="slide__role">{{ s.role }}</h3>
+                <p class="slide__summary">{{ s.summary }}</p>
+                <ul class="slide__stack"><li v-for="t in s.stack" :key="t">{{ t }}</li></ul>
+              </header>
+              <div class="slide__cols">
+                <div class="slide__col">
+                  <h4 class="slide__label">負責事務</h4>
+                  <ul class="slide__list">
+                    <li v-for="(d, di) in s.duties" :key="d" :style="{ '--i': di }">{{ d }}</li>
+                  </ul>
+                </div>
+                <div class="slide__col">
+                  <h4 class="slide__label slide__label--win">完成事項</h4>
+                  <ul class="slide__list slide__list--win">
+                    <li v-for="(w, wi) in s.wins" :key="w.text" :class="{ 'is-star': w.star }" :style="{ '--i': wi }">
+                      <span v-if="w.metric" class="slide__metric">{{ w.metric }}</span>
+                      {{ w.text }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="deck__ctrl">
+            <button class="deck__btn" type="button" aria-label="上一頁" @click="goSlide(slide - 1)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" /></svg>
+            </button>
+            <div class="deck__dots">
+              <button
+                v-for="(s, i) in deck"
+                :key="s.period"
+                type="button"
+                class="deck__dot"
+                :class="{ 'is-active': i === slide }"
+                :aria-label="`第 ${i + 1} 頁`"
+                @click="goSlide(i)"
+              />
+            </div>
+            <button class="deck__btn" type="button" aria-label="下一頁" @click="goSlide(slide + 1)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" /></svg>
+            </button>
+          </div>
+          <p class="deck__hint">← → 方向鍵或左右滑動翻頁</p>
+        </div>
+      </section>
+
       <!-- ============ JOURNEY ============ -->
       <section id="journey" class="journey">
         <div class="journey__head">
-          <p class="section-tag" data-reveal="up">03 · Journey</p>
+          <p class="section-tag" data-reveal="up">04 · Journey</p>
           <h2 class="section-title" data-reveal="up" style="--d: 0.1s">航行日誌</h2>
           <p class="section-desc" data-reveal="up" style="--d: 0.2s">四顆星球，一條航線。</p>
         </div>
@@ -371,7 +528,7 @@ onUnmounted(() => {
         <div class="radar" aria-hidden="true" data-reveal="scale">
           <span /><span /><span />
         </div>
-        <p class="section-tag" data-reveal="up">04 · Contact</p>
+        <p class="section-tag" data-reveal="up">05 · Contact</p>
         <h2 class="section-title" data-reveal="up" style="--d: 0.1s">傳送訊號</h2>
         <p class="section-desc" data-reveal="up" style="--d: 0.2s">技術交流、合作機會，或單純聊聊開發的大小事。</p>
         <div class="contact__links" data-reveal="up" style="--d: 0.3s">
@@ -388,7 +545,7 @@ onUnmounted(() => {
     </main>
 
     <footer class="footer">
-      <span>© 2026 Justyr · 蔡勝諺</span>
+      <span> - Justyr </span>
       <span class="footer__dim">Built with Vue 3 · VitePress</span>
     </footer>
   </div>
@@ -1118,6 +1275,225 @@ section {
 }
 
 /* =====================================================
+   deck (成果簡報)
+   ===================================================== */
+.deck__head {
+  text-align: center;
+}
+.deck__frame {
+  position: relative;
+  margin-top: 56px;
+  touch-action: pan-y;
+}
+.deck__stage {
+  position: relative;
+  display: grid;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)), rgba(8, 10, 24, 0.7);
+  backdrop-filter: blur(14px);
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+.slide {
+  grid-area: 1 / 1;
+  position: relative;
+  padding: clamp(28px, 4vw, 52px);
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  gap: clamp(28px, 4vw, 56px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(60px);
+  transition: opacity 0.6s var(--ease-out), transform 0.7s var(--ease-out), visibility 0s linear 0.7s;
+}
+.dir-prev .slide {
+  transform: translateX(-60px);
+}
+.slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s, 0s, 0s;
+}
+.slide__planet {
+  position: absolute;
+  right: -90px;
+  top: -90px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff 0%, var(--c1) 25%, var(--c2) 100%);
+  box-shadow: inset -40px -40px 90px rgba(0, 0, 0, 0.6), 0 0 90px var(--glow);
+  opacity: 0.35;
+  pointer-events: none;
+}
+.slide__head {
+  position: relative;
+}
+.slide__index {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: var(--ink-3);
+}
+.slide__period {
+  margin-top: 18px;
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  color: var(--c1);
+}
+.slide__role {
+  margin-top: 8px;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+.slide__summary {
+  margin-top: 14px;
+  color: var(--ink-2);
+  line-height: 1.8;
+}
+.slide__stack {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+.slide__stack li {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+.slide__cols {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 3vw, 40px);
+}
+.slide__label {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.slide__label--win {
+  color: var(--c1);
+}
+.slide__list {
+  list-style: none;
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.slide__list li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--ink-2);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s var(--ease-out) calc(0.25s + var(--i) * 0.08s), transform 0.6s var(--ease-out) calc(0.25s + var(--i) * 0.08s);
+}
+.slide.is-active .slide__list li {
+  opacity: 1;
+  transform: none;
+}
+.slide__list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.75em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+.slide__list--win li::before {
+  background: var(--c1);
+  box-shadow: 0 0 10px var(--glow);
+}
+.slide__list--win li.is-star {
+  color: var(--ink);
+  font-weight: 500;
+}
+.slide__list--win li.is-star::before {
+  width: 8px;
+  height: 8px;
+  left: -1px;
+  background: radial-gradient(circle at 35% 35%, #fff, var(--c1) 60%);
+}
+.slide__metric {
+  display: block;
+  margin: 2px 0 6px;
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  background: linear-gradient(120deg, #fff, var(--c1));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.deck__ctrl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 26px;
+}
+.deck__btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--glass);
+  color: var(--ink-2);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: border-color 0.3s, color 0.3s, transform 0.3s var(--ease-out);
+}
+.deck__btn:hover {
+  border-color: rgba(94, 231, 255, 0.5);
+  color: var(--ink);
+  transform: scale(1.08);
+}
+.deck__dots {
+  display: flex;
+  gap: 10px;
+}
+.deck__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s var(--ease-out), box-shadow 0.3s;
+}
+.deck__dot.is-active {
+  background: var(--cyan);
+  transform: scale(1.4);
+  box-shadow: 0 0 12px var(--cyan);
+}
+.deck__hint {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  color: var(--ink-3);
+}
+
+/* =====================================================
    journey
    ===================================================== */
 .journey__head {
@@ -1330,6 +1706,15 @@ section {
    responsive
    ===================================================== */
 @media (max-width: 900px) {
+  .slide {
+    grid-template-columns: 1fr;
+  }
+  .slide__planet {
+    width: 180px;
+    height: 180px;
+    right: -70px;
+    top: -70px;
+  }
   .skills__body {
     grid-template-columns: 1fr;
   }
@@ -1348,6 +1733,12 @@ section {
   }
 }
 @media (max-width: 640px) {
+  .slide__cols {
+    grid-template-columns: 1fr;
+  }
+  .deck__stage {
+    border-radius: 20px;
+  }
   .nav__links {
     gap: 18px;
     font-size: 0.85rem;
